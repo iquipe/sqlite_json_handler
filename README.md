@@ -44,8 +44,8 @@ Detailed installation and deployment instructions are provided within the docume
 
 Usage instructions, including request/response formats and code samples for interacting with the APIs, are available in their respective documentation files:
 
-*   **JSON/REST API:** [JSON/REST API Usage Guide](./sqlite_json_handler/DOCUMENTATION_REST.md#api-operations-and-usage-requestresponse-samples)
-*   **SOAP API:** [SOAP API Usage Guide](./sqlite_soap_handler/DOCUMENTATION_SOAP.md#api-operations-and-usage-client-side-examples)
+*   **JSON/REST API:** [JSON/REST API Usage Guide](./doc/api.md)
+*   **SOAP API:** [SOAP API Usage Guide](./doc/soap.md)
 
 ## Contributing
 
