@@ -1,4 +1,4 @@
-```markdown
+
 # SQLite JSON/REST API Handler - Deployment and Usage Documentation
 
 ## Table of Contents

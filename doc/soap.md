@@ -1,4 +1,3 @@
-```markdown
 # SQLite SOAP API Handler - Deployment and Usage Documentation
 
 ## Table of Contents
