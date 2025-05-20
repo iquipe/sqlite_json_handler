@@ -12,15 +12,15 @@
 
 Detailed installation and deployment instructions are provided within the documentation for each API type:
 
-*   **For JSON/REST API:** Please refer to [JSON/REST API Deployment Guide](./sqlite_json_handler/DOCUMENTATION_REST.md#deployment-steps).
-*   **For SOAP API:** Please refer to [SOAP API Deployment Guide](./sqlite_soap_handler/DOCUMENTATION_SOAP.md#deployment-steps).
+*   **For JSON/REST API:** Please refer to [JSON/REST API Deployment Guide](./doc/api.md).
+*   **For SOAP API:** Please refer to [SOAP API Deployment Guide](./doc/soap.md).
 
 **General Steps:**
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/your-repo-name.git
-    cd your-repo-name
+    git clone https://github.com/iquipe/sqlite_json_handler.git
+    cd sqlite_json_handler
     ```
 2.  **Navigate to the desired API handler directory:**
     ```bash
