@@ -1,0 +1,11 @@
+{
+    "name": "iquipedigital/sqlite-json-handler",
+    "description": "A PHP OOP project for handling SQLite with JSON I/O.",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {}
+}

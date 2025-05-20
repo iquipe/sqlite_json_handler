@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="DatabaseService"
+             targetNamespace="urn:DatabaseService"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:tns="urn:DatabaseService">
+
+    <!-- Type Definitions -->
+    <types>
+        <xsd:schema targetNamespace="urn:DatabaseService">
+            <!-- Complex Type for Column Definition -->
+            <xsd:complexType name="ColumnDefinition">
+                <xsd:sequence>
+                    <xsd:element name="name" type="xsd:string"/>
+                    <xsd:element name="type" type="xsd:string"/>
+                    <xsd:element name="constraints" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOfColumnDefinition">
+                <xsd:sequence>
+                    <xsd:element name="column" type="tns:ColumnDefinition" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Complex Type for Key-Value Pair (for generic data) -->
+            <xsd:complexType name="KeyValue">
+                <xsd:sequence>
+                    <xsd:element name="key" type="xsd:string"/>
+                    <xsd:element name="value" type="xsd:anySimpleType"/> <!-- Can be string, int, etc. -->
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOfKeyValue">
+                <xsd:sequence>
+                    <xsd:element name="item" type="tns:KeyValue" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Complex Type for Where Condition -->
+            <xsd:complexType name="WhereCondition">
+                <xsd:sequence>
+                    <xsd:element name="field" type="xsd:string"/>
+                    <xsd:element name="operator" type="xsd:string"/>
+                    <xsd:element name="value" type="xsd:anyType"/> <!-- Value can be simple or an array for IN -->
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOfWhereCondition">
+                <xsd:sequence>
+                    <xsd:element name="condition" type="tns:WhereCondition" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Complex Type for Order By Clause -->
+            <xsd:complexType name="OrderByClause">
+                <xsd:sequence>
+                    <xsd:element name="field" type="xsd:string"/>
+                    <xsd:element name="direction" type="xsd:string"/> <!-- ASC or DESC -->
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOfOrderByClause">
+                <xsd:sequence>
+                    <xsd:element name="clause" type="tns:OrderByClause" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Complex Type for Selection Criteria -->
+            <xsd:complexType name="SelectionCriteria">
+                <xsd:sequence>
+                    <xsd:element name="fields" type="tns:ArrayOfString" minOccurs="0"/>
+                    <xsd:element name="where" type="tns:ArrayOfWhereCondition" minOccurs="0"/>
+                    <xsd:element name="orderBy" type="tns:ArrayOfOrderByClause" minOccurs="0"/>
+                    <xsd:element name="limit" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="offset" type="xsd:int" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOfString">
+                <xsd:sequence>
+                    <xsd:element name="string" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Complex Type for Table Schema Field -->
+            <xsd:complexType name="FieldInfo">
+                <xsd:sequence>
+                    <xsd:element name="cid" type="xsd:int"/>
+                    <xsd:element name="name" type="xsd:string"/>
+                    <xsd:element name="type" type="xsd:string"/>
+                    <xsd:element name="notnull" type="xsd:int"/>
+                    <xsd:element name="dflt_value" type="xsd:string" nillable="true"/>
+                    <xsd:element name="pk" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOfFieldInfo">
+                <xsd:sequence>
+                    <xsd:element name="field" type="tns:FieldInfo" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+             <!-- Complex Type for representing a single table's schema -->
+            <xsd:complexType name="TableSchema">
+                <xsd:sequence>
+                    <xsd:element name="tableName" type="xsd:string"/>
+                    <xsd:element name="fields" type="tns:ArrayOfFieldInfo"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOfTableSchema">
+                 <xsd:sequence>
+                    <xsd:element name="table" type="tns:TableSchema" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Response types for operations -->
+            <xsd:element name="CreateDatabaseResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="message" type="xsd:string"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="DeleteDatabaseResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="message" type="xsd:string"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="BackupDatabaseResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="backupPath" type="xsd:string"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="RestoreDatabaseResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="message" type="xsd:string"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="ListTablesResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="tables" type="tns:ArrayOfTableSchema"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="CreateTableResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="message" type="xsd:string"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="DeleteTableResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="message" type="xsd:string"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="GetTableSchemaResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="schema" type="tns:ArrayOfFieldInfo"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="InsertRecordResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="lastInsertId" type="xsd:int"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="SelectRecordsResponse"> <!-- This will return an array of arrays of KeyValue -->
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="records" type="tns:ArrayOfArrayOfKeyValue" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+             <xsd:complexType name="ArrayOfArrayOfKeyValue">
+                <xsd:sequence>
+                    <xsd:element name="row" type="tns:ArrayOfKeyValue" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="UpdateRecordsResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="affectedRows" type="xsd:int"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="DeleteRecordsResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="affectedRows" type="xsd:int"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+
+    <!-- Message Definitions -->
+    <message name="CreateDatabaseRequest">
+        <part name="dbName" type="xsd:string"/>
+    </message>
+    <message name="CreateDatabaseResponse">
+        <part name="parameters" element="tns:CreateDatabaseResponse"/>
+    </message>
+
+    <message name="DeleteDatabaseRequest">
+        <part name="dbName" type="xsd:string"/>
+    </message>
+    <message name="DeleteDatabaseResponse">
+        <part name="parameters" element="tns:DeleteDatabaseResponse"/>
+    </message>
+
+    <message name="BackupDatabaseRequest">
+        <part name="dbName" type="xsd:string"/>
+    </message>
+    <message name="BackupDatabaseResponse">
+        <part name="parameters" element="tns:BackupDatabaseResponse"/>
+    </message>
+
+    <message name="RestoreDatabaseRequest">
+        <part name="dbNameToRestore" type="xsd:string"/>
+        <part name="backupFileName" type="xsd:string"/>
+    </message>
+    <message name="RestoreDatabaseResponse">
+        <part name="parameters" element="tns:RestoreDatabaseResponse"/>
+    </message>
+
+    <message name="ListTablesRequest">
+        <part name="dbName" type="xsd:string"/>
+    </message>
+    <message name="ListTablesResponse">
+        <part name="parameters" element="tns:ListTablesResponse"/>
+    </message>
+
+    <message name="CreateTableRequest">
+        <part name="dbName" type="xsd:string"/>
+        <part name="tableName" type="xsd:string"/>
+        <part name="columns" type="tns:ArrayOfColumnDefinition"/>
+    </message>
+    <message name="CreateTableResponse">
+        <part name="parameters" element="tns:CreateTableResponse"/>
+    </message>
+
+    <message name="DeleteTableRequest">
+        <part name="dbName" type="xsd:string"/>
+        <part name="tableName" type="xsd:string"/>
+    </message>
+    <message name="DeleteTableResponse">
+        <part name="parameters" element="tns:DeleteTableResponse"/>
+    </message>
+
+    <message name="GetTableSchemaRequest">
+        <part name="dbName" type="xsd:string"/>
+        <part name="tableName" type="xsd:string"/>
+    </message>
+    <message name="GetTableSchemaResponse">
+        <part name="parameters" element="tns:GetTableSchemaResponse"/>
+    </message>
+
+    <message name="InsertRecordRequest">
+        <part name="dbName" type="xsd:string"/>
+        <part name="tableName" type="xsd:string"/>
+        <part name="data" type="tns:ArrayOfKeyValue"/>
+    </message>
+    <message name="InsertRecordResponse">
+        <part name="parameters" element="tns:InsertRecordResponse"/>
+    </message>
+
+    <message name="SelectRecordsRequest">
+        <part name="dbName" type="xsd:string"/>
+        <part name="tableName" type="xsd:string"/>
+        <part name="criteria" type="tns:SelectionCriteria"/>
+    </message>
+    <message name="SelectRecordsResponse">
+        <part name="parameters" element="tns:SelectRecordsResponse"/>
+    </message>
+
+    <message name="UpdateRecordsRequest">
+        <part name="dbName" type="xsd:string"/>
+        <part name="tableName" type="xsd:string"/>
+        <part name="data" type="tns:ArrayOfKeyValue"/>
+        <part name="where" type="tns:ArrayOfWhereCondition"/>
+    </message>
+    <message name="UpdateRecordsResponse">
+        <part name="parameters" element="tns:UpdateRecordsResponse"/>
+    </message>
+
+    <message name="DeleteRecordsRequest">
+        <part name="dbName" type="xsd:string"/>
+        <part name="tableName" type="xsd:string"/>
+        <part name="where" type="tns:ArrayOfWhereCondition"/>
+    </message>
+    <message name="DeleteRecordsResponse">
+        <part name="parameters" element="tns:DeleteRecordsResponse"/>
+    </message>
+
+
+    <!-- PortType (Interface) Definition -->
+    <portType name="DatabaseServicePortType">
+        <operation name="createDatabase">
+            <input message="tns:CreateDatabaseRequest"/>
+            <output message="tns:CreateDatabaseResponse"/>
+        </operation>
+        <operation name="deleteDatabase">
+            <input message="tns:DeleteDatabaseRequest"/>
+            <output message="tns:DeleteDatabaseResponse"/>
+        </operation>
+        <operation name="backupDatabase">
+            <input message="tns:BackupDatabaseRequest"/>
+            <output message="tns:BackupDatabaseResponse"/>
+        </operation>
+        <operation name="restoreDatabase">
+            <input message="tns:RestoreDatabaseRequest"/>
+            <output message="tns:RestoreDatabaseResponse"/>
+        </operation>
+        <operation name="listTables">
+            <input message="tns:ListTablesRequest"/>
+            <output message="tns:ListTablesResponse"/>
+        </operation>
+        <operation name="createTable">
+            <input message="tns:CreateTableRequest"/>
+            <output message="tns:CreateTableResponse"/>
+        </operation>
+        <operation name="deleteTable">
+            <input message="tns:DeleteTableRequest"/>
+            <output message="tns:DeleteTableResponse"/>
+        </operation>
+        <operation name="getTableSchema">
+            <input message="tns:GetTableSchemaRequest"/>
+            <output message="tns:GetTableSchemaResponse"/>
+        </operation>
+        <operation name="insertRecord">
+            <input message="tns:InsertRecordRequest"/>
+            <output message="tns:InsertRecordResponse"/>
+        </operation>
+        <operation name="selectRecords">
+            <input message="tns:SelectRecordsRequest"/>
+            <output message="tns:SelectRecordsResponse"/>
+        </operation>
+        <operation name="updateRecords">
+            <input message="tns:UpdateRecordsRequest"/>
+            <output message="tns:UpdateRecordsResponse"/>
+        </operation>
+        <operation name="deleteRecords">
+            <input message="tns:DeleteRecordsRequest"/>
+            <output message="tns:DeleteRecordsResponse"/>
+        </operation>
+    </portType>
+
+    <!-- Binding Definition (SOAP specific) -->
+    <binding name="DatabaseServiceBinding" type="tns:DatabaseServicePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="createDatabase">
+            <soap:operation soapAction="urn:DatabaseService#createDatabase"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="deleteDatabase">
+            <soap:operation soapAction="urn:DatabaseService#deleteDatabase"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="backupDatabase">
+            <soap:operation soapAction="urn:DatabaseService#backupDatabase"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="restoreDatabase">
+            <soap:operation soapAction="urn:DatabaseService#restoreDatabase"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="listTables">
+            <soap:operation soapAction="urn:DatabaseService#listTables"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="createTable">
+            <soap:operation soapAction="urn:DatabaseService#createTable"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="deleteTable">
+            <soap:operation soapAction="urn:DatabaseService#deleteTable"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="getTableSchema">
+            <soap:operation soapAction="urn:DatabaseService#getTableSchema"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="insertRecord">
+            <soap:operation soapAction="urn:DatabaseService#insertRecord"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="selectRecords">
+            <soap:operation soapAction="urn:DatabaseService#selectRecords"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="updateRecords">
+            <soap:operation soapAction="urn:DatabaseService#updateRecords"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="deleteRecords">
+            <soap:operation soapAction="urn:DatabaseService#deleteRecords"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+    </binding>
+
+    <!-- Service Definition -->
+    <service name="DatabaseService">
+        <port name="DatabaseServicePort" binding="tns:DatabaseServiceBinding">
+            <soap:address location="REPLACE_WITH_YOUR_SOAP_SERVER_URL/soap_server.php"/>
+            <!-- Example: http://localhost:8000/soap_server.php -->
+        </port>
+    </service>
+</definitions>

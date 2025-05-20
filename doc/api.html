@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLite JSON/REST API Handler - Documentation</title>
+
+    <!-- Bootstrap 5.0 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Roboto Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Color Palette Variables */
+        :root {
+            --primary-100: #3F51B5;
+            --primary-200: #757de8;
+            --primary-300: #dedeff;
+            --accent-100: #2196F3;
+            --accent-200: #003f8f;
+            --text-100: #333333;
+            --text-200: #5c5c5c;
+            --bg-100: #FFFFFF;
+            --bg-200: #f5f5f5;
+            --bg-300: #cccccc;
+            --code-bg: #f9f9f9; /* Light background for code blocks */
+            --code-text: #333333;
+            --code-border: #e0e0e0;
+
+            --font-family-sans-serif: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+
+        /* Preloader Styles */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-100);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        #preloader .spinner-wrapper { text-align: center; }
+        #preloader .spinner-border.accent-color {
+            color: var(--accent-100);
+            width: 3rem;
+            height: 3rem;
+        }
+
+        /* General Body & HTML Styles */
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-family-sans-serif);
+            background-color: var(--bg-200); /* Overall page background */
+            color: var(--text-100);
+            padding-top: 70px; /* Navbar height */
+            position: relative; /* For Bootstrap scrollspy */
+        }
+
+        /* Navbar Styling */
+        .navbar { background-color: var(--primary-100) !important; }
+        .navbar .navbar-brand, .navbar .nav-link { color: var(--bg-100) !important; font-weight: 500; }
+        .navbar .nav-link:hover, .navbar .nav-link.active { color: var(--primary-300) !important; }
+        .navbar .navbar-brand .material-icons { margin-right: 0.3rem; }
+
+        /* Main Content Area */
+        .main-content {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        /* Documentation Content Styling */
+        .doc-content-wrapper {
+            background-color: var(--bg-100);
+            padding: 2rem 2.5rem;
+            border-radius: 0.3rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            margin-bottom: 2rem;
+        }
+        .doc-content-wrapper h1, .doc-content-wrapper h2,
+        .doc-content-wrapper h3, .doc-content-wrapper h4 {
+            color: var(--primary-100);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--primary-300);
+        }
+        .doc-content-wrapper h1 { font-size: 2.2rem; margin-top: 0; }
+        .doc-content-wrapper h2 { font-size: 1.8rem; }
+        .doc-content-wrapper h3 { font-size: 1.5rem; color: var(--primary-200); border-bottom-style: dashed; }
+        .doc-content-wrapper h4 { font-size: 1.25rem; color: var(--accent-100); border-bottom-style: dotted; }
+
+        .doc-content-wrapper p, .doc-content-wrapper li {
+            color: var(--text-100);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        .doc-content-wrapper ul, .doc-content-wrapper ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .doc-content-wrapper li { margin-bottom: 0.3rem; }
+        .doc-content-wrapper a { color: var(--accent-100); text-decoration: none; }
+        .doc-content-wrapper a:hover { color: var(--accent-200); text-decoration: underline; }
+        .doc-content-wrapper hr {
+            border-top: 2px solid var(--primary-300);
+            margin: 2.5rem 0;
+        }
+        .doc-content-wrapper strong { color: var(--text-100); font-weight: 500; }
+        .doc-content-wrapper em { color: var(--text-200); }
+
+        /* Code Blocks */
+        .doc-content-wrapper pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-left: 3px solid var(--primary-100);
+            padding: 1rem;
+            border-radius: 0.25rem;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .doc-content-wrapper code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            color: var(--code-text);
+        }
+        .doc-content-wrapper p > code, .doc-content-wrapper li > code { /* Inline code */
+            background-color: var(--primary-300);
+            color: var(--primary-100);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+
+        /* Documentation Sidebar (Table of Contents) */
+        #docSidebar {
+            position: sticky;
+            top: 80px; /* Below navbar */
+            height: calc(100vh - 100px); /* Adjust as needed */
+            overflow-y: auto;
+            padding: 1rem 0 1rem 1rem;
+            border-left: 1px solid var(--bg-300);
+        }
+        #docSidebar .nav-link {
+            color: var(--text-200);
+            padding: 0.3rem 1rem;
+            font-size: 0.9rem;
+            border-left: 3px solid transparent;
+        }
+        #docSidebar .nav-link:hover {
+            color: var(--accent-100);
+            background-color: var(--primary-300);
+        }
+        #docSidebar .nav-link.active {
+            color: var(--accent-100);
+            font-weight: 500;
+            border-left-color: var(--accent-100);
+            background-color: var(--primary-300);
+        }
+        /* Nested TOC items */
+        #docSidebar .nav .nav { /* Sub-level nav */
+            padding-left: 1rem;
+        }
+        #docSidebar .nav .nav .nav-link {
+            font-size: 0.85rem;
+            padding-left: 1.5rem; /* More indent */
+        }
+         #docSidebar .nav .nav .nav .nav-link { /* Third level */
+            padding-left: 2.5rem;
+        }
+
+
+        /* Footer */
+        .footer {
+            background-color: var(--bg-300);
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            flex-shrink: 0;
+            font-size: 0.9em;
+        }
+        .footer .text-muted { color: var(--text-200) !important; }
+
+        /* Responsive Adjustments */
+        @media (max-width: 991.98px) { /* md breakpoint */
+            #docSidebar {
+                position: static;
+                height: auto;
+                border-left: none;
+                border-top: 1px solid var(--bg-300);
+                margin-top: 1.5rem;
+                padding-left: 0;
+            }
+            .doc-content-wrapper {
+                padding: 1.5rem;
+            }
+        }
+         @media (max-width: 767.98px) {
+            body { padding-top: 56px; }
+        }
+
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#docSidebarNav" data-bs-offset="100">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="spinner-wrapper">
+            <div class="spinner-border accent-color" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading Documentation...</p>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <span class="material-icons">wysiwyg</span>
+                API Documentation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="container-fluid main-content">
+        <div class="row">
+            <!-- Documentation Content -->
+            <div class="col-lg-9 col-md-8">
+                <div class="doc-content-wrapper">
+                    <!-- Converted Markdown Content Goes Here -->
+                    <h1 id="sqlite-jsonrest-api-handler-deployment-and-usage-documentation">SQLite JSON/REST API Handler - Deployment and Usage Documentation</h1>
+
+                    <h2 id="table-of-contents">Table of Contents</h2>
+                    <ol>
+                        <li><a href="#introduction">Introduction</a></li>
+                        <li><a href="#project-structure">Project Structure</a></li>
+                        <li><a href="#prerequisites">Prerequisites</a></li>
+                        <li><a href="#deployment-steps">Deployment Steps</a>
+                            <ol type="A">
+                                <li><a href="#clonedownload-project">Clone/Download Project</a></li>
+                                <li><a href="#install-dependencies-composer">Install Dependencies (Composer)</a></li>
+                                <li><a href="#set-directory-permissions">Set Directory Permissions</a></li>
+                                <li><a href="#web-server-configuration">Web Server Configuration</a>
+                                    <ul>
+                                        <li><a href="#using-php-built-in-server-development">Using PHP Built-in Server (Development)</a></li>
+                                        <li><a href="#using-apache-productionstaging">Using Apache (Production/Staging)</a></li>
+                                        <li><a href="#using-nginx-productionstaging">Using Nginx (Production/Staging)</a></li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </li>
+                        <li><a href="#api-endpoint">API Endpoint</a></li>
+                        <li><a href="#request-format">Request Format</a></li>
+                        <li><a href="#response-format">Response Format</a></li>
+                        <li><a href="#api-operations-and-usage-requestresponse-samples">API Operations and Usage (Request/Response Samples)</a>
+                            <ol type="A">
+                                <li><a href="#common-request-structure">Common Request Structure</a></li>
+                                <li><a href="#database-operations">Database Operations</a>
+                                    <ul>
+                                        <li><a href="#create-database">Create Database</a></li>
+                                        <li><a href="#delete-database">Delete Database</a></li>
+                                        <li><a href="#backup-database">Backup Database</a></li>
+                                        <li><a href="#restore-database">Restore Database</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#schema-operations">Schema Operations</a>
+                                    <ul>
+                                        <li><a href="#list-all-tables-with-fields">List All Tables with Fields</a></li>
+                                        <li><a href="#create-table">Create Table</a></li>
+                                        <li><a href="#delete-table">Delete Table</a></li>
+                                        <li><a href="#get-table-schema-individual">Get Table Schema (Individual)</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#data-crud-operations">Data (CRUD) Operations</a>
+                                    <ul>
+                                        <li><a href="#insert-record">Insert Record</a></li>
+                                        <li><a href="#select-records-query">Select Records (Query)</a></li>
+                                        <li><a href="#update-records">Update Records</a></li>
+                                        <li><a href="#delete-records">Delete Records</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#error-handling">Error Handling</a></li>
+                            </ol>
+                        </li>
+                        <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    </ol>
+
+                    <hr>
+
+                    <h2 id="introduction">1. Introduction</h2>
+                    <p>This document provides instructions for deploying and using the SQLite JSON/REST API Handler. This service allows interaction with SQLite databases through a simple JSON-based RESTful API. It supports operations such as database creation/deletion, table management, CRUD operations, backups, and restores.</p>
+
+                    <hr>
+
+                    <h2 id="project-structure">2. Project Structure</h2>
+                    <pre><code class="language-plaintext">sqlite_json_handler/
+├── src/
+│   ├── Database/
+│   │   ├── SQLiteManager.php
+│   │   └── TableManager.php
+│   ├── Http/
+│   │   ├── Request.php
+│   │   └── Response.php
+│   └── Api/
+│       └── ApiController.php
+├── public/
+│   └── api.php                 # API Entry Point
+├── databases/                    # Stores .sqlite files (writable)
+├── backups/                      # Stores database backups (writable)
+└── composer.json
+└── README.md
+</code></pre>
+                    <ul>
+                        <li><strong><code>src/</code></strong>: Contains the core PHP classes for database management, HTTP request/response handling, and the API controller logic.</li>
+                        <li><strong><code>public/</code></strong>: Contains the web-accessible API entry point script (<code>api.php</code>). This directory should be your web server's document root.</li>
+                        <li><strong><code>databases/</code></strong>: Directory where SQLite database files will be created and stored.</li>
+                        <li><strong><code>backups/</code></strong>: Directory where database backups will be stored.</li>
+                        <li><strong><code>composer.json</code></strong>: Defines project dependencies (primarily for PSR-4 autoloading).</li>
+                    </ul>
+
+                    <hr>
+
+                    <h2 id="prerequisites">3. Prerequisites</h2>
+                    <ul>
+                        <li>PHP 7.4 or higher.</li>
+                        <li>PHP <code>sqlite3</code> extension enabled. (Check with <code>php -m | grep sqlite</code> or in <code>php.ini</code>).</li>
+                        <li>PHP <code>json</code> extension enabled (usually enabled by default).</li>
+                        <li>Composer (for dependency management and autoloading - recommended).</li>
+                        <li>A web server (Apache, Nginx, or PHP's built-in server for development).</li>
+                        <li>Write permissions for the web server user on the <code>databases/</code> and <code>backups/</code> directories.</li>
+                        <li>A tool to make HTTP POST requests with JSON bodies (e.g., <code>curl</code>, Postman, Insomnia).</li>
+                    </ul>
+
+                    <hr>
+
+                    <h2 id="deployment-steps">4. Deployment Steps</h2>
+
+                    <h3 id="clonedownload-project">4.1. Clone/Download Project</h3>
+                    <p>Obtain the project files, either by cloning a Git repository or downloading a ZIP archive and extracting it to your server.</p>
+                    <pre><code class="language-bash"># Example using Git
+git clone &lt;repository_url&gt; sqlite_json_handler
+cd sqlite_json_handler</code></pre>
+
+                    <h3 id="install-dependencies-composer">4.2. Install Dependencies (Composer)</h3>
+                    <p>If you have Composer installed, navigate to the project root directory (<code>sqlite_json_handler</code>) and run:</p>
+                    <pre><code class="language-bash">composer install</code></pre>
+                    <p>This will install any defined dependencies and set up the PSR-4 autoloader specified in <code>composer.json</code>, creating a <code>vendor/autoload.php</code> file.</p>
+                    <p>If you are not using Composer, you will need to manually include the necessary class files using <code>require_once</code> at the beginning of <code>public/api.php</code>.</p>
+
+                    <h3 id="set-directory-permissions">4.3. Set Directory Permissions</h3>
+                    <p>The web server process needs write access to the <code>databases/</code> and <code>backups/</code> directories.</p>
+                    <p>Navigate to the project root (<code>sqlite_json_handler</code>) and run:</p>
+                    <pre><code class="language-bash"># Create directories if they don't exist
+mkdir -p databases backups
+
+# Set permissions
+# Replace www-data:www-data with your web server's user and group if different (e.g., apache:apache)
+sudo chown -R www-data:www-data databases backups
+sudo chmod -R 775 databases backups</code></pre>
+                    <p>If <code>775</code> does not work due to strict server configurations, you might temporarily use <code>777</code> for testing, but this is not recommended for production.</p>
+
+                    <h3 id="web-server-configuration">4.4. Web Server Configuration</h3>
+
+                    <h4 id="using-php-built-in-server-development">4.4.1. Using PHP Built-in Server (Development)</h4>
+                    <p>For development purposes, PHP's built-in web server is convenient.</p>
+                    <ol>
+                        <li>Navigate to the project root directory (<code>sqlite_json_handler</code>) in your terminal.</li>
+                        <li>Start the server:
+                            <pre><code class="language-bash">php -S localhost:8000 -t public</code></pre>
+                            <ul>
+                                <li>This makes your application accessible at <code>http://localhost:8000</code>.</li>
+                                <li>The <code>-t public</code> option sets the <code>public/</code> directory as the document root.</li>
+                                <li>Your API endpoint will be <code>http://localhost:8000/api.php</code>.</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4 id="using-apache-productionstaging">4.4.2. Using Apache (Production/Staging)</h4>
+                    <ol>
+                        <li>Ensure Apache's <code>mod_rewrite</code> is enabled (optional, but useful if you want prettier URLs later).</li>
+                        <li>Configure a Virtual Host for your application, pointing the <code>DocumentRoot</code> to the <code>public/</code> directory of your project.
+                        <p>Example Apache Virtual Host configuration (<code>/etc/apache2/sites-available/sqlite-json-api.conf</code>):</p>
+                        <pre><code class="language-apacheconf">&lt;VirtualHost *:80&gt;
+    ServerName your.api.domain.com # Or your server's IP/hostname
+    DocumentRoot /var/www/html/sqlite_json_handler/public
+
+    &lt;Directory /var/www/html/sqlite_json_handler/public&gt;
+        Options Indexes FollowSymLinks
+        AllowOverride All # Or at least FileInfo for .htaccess if used for rewrites
+        Require all granted
+    &lt;/Directory&gt;
+
+    ErrorLog ${APACHE_LOG_DIR}/sqlite_json_api_error.log
+    CustomLog ${APACHE_LOG_DIR}/sqlite_json_api_access.log combined
+&lt;/VirtualHost&gt;</code></pre>
+                        </li>
+                        <li>Enable the site and restart Apache:
+                        <pre><code class="language-bash">sudo a2ensite sqlite-json-api.conf
+sudo systemctl reload apache2 # or service apache2 reload</code></pre>
+                        </li>
+                    </ol>
+
+                    <h4 id="using-nginx-productionstaging">4.4.3. Using Nginx (Production/Staging)</h4>
+                    <ol>
+                        <li>Configure an Nginx server block, setting the <code>root</code> to the <code>public/</code> directory and ensuring PHP requests are passed to PHP-FPM.
+                        <p>Example Nginx server block configuration (<code>/etc/nginx/sites-available/sqlite-json-api</code>):</p>
+                        <pre><code class="language-nginx">server {
+    listen 80;
+    server_name your.api.domain.com; # Or your server's IP/hostname
+    root /var/www/html/sqlite_json_handler/public;
+
+    index api.php index.php index.html index.htm; # api.php is the main entry
+
+    location / {
+        try_files $uri $uri/ /api.php?$query_string; # If you want api.php to handle all non-file requests
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock; # Adjust PHP version and FPM socket path
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}</code></pre>
+                        </li>
+                        <li>Enable the site and restart Nginx:
+                        <pre><code class="language-bash">sudo ln -s /etc/nginx/sites-available/sqlite-json-api /etc/nginx/sites-enabled/
+sudo systemctl reload nginx # or service nginx reload</code></pre>
+                        </li>
+                    </ol>
+
+                    <hr>
+
+                    <h2 id="api-endpoint">5. API Endpoint</h2>
+                    <p>All API requests are made via HTTP POST to a single endpoint:<br>
+                    <code>http://&lt;your_server_address_and_path&gt;/api.php</code></p>
+                    <p>Example: <code>http://localhost:8000/api.php</code></p>
+
+                    <hr>
+
+                    <h2 id="request-format">6. Request Format</h2>
+                    <ul>
+                        <li><strong>Method:</strong> <code>POST</code></li>
+                        <li><strong>Content-Type:</strong> <code>application/json</code></li>
+                        <li><strong>Body:</strong> A JSON object containing the action to perform and its associated payload.</li>
+                    </ul>
+                    <pre><code class="language-json">{
+    "dbName": "optional_for_some_actions_required_for_most_table_ops",
+    "action": "action_name",
+    "payload": {
+        // Action-specific parameters
+    }
+}</code></pre>
+                    <ul>
+                        <li><code>dbName</code> (string, optional/required): The name of the target database (without <code>.sqlite</code> extension).
+                            <ul>
+                                <li>Not required for <code>create_database</code>.</li>
+                                <li>Required for most other operations to specify which database to act upon.</li>
+                            </ul>
+                        </li>
+                        <li><code>action</code> (string, required): The specific operation to perform (e.g., <code>create_table</code>, <code>insert_record</code>).</li>
+                        <li><code>payload</code> (object, required): An object containing parameters specific to the chosen <code>action</code>.</li>
+                    </ul>
+
+                    <hr>
+
+                    <h2 id="response-format">7. Response Format</h2>
+                    <p>All API responses are in JSON format.</p>
+                    <p><strong>Successful Response:</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Descriptive message of the outcome",
+    "data": {
+        // Action-specific data, or null
+    }
+}</code></pre>
+                    <p>HTTP Status Code: <code>200 OK</code> (or <code>201 Created</code> for resource creation, though this example uses <code>200</code> for simplicity).</p>
+                    <p><strong>Error Response:</strong></p>
+                    <pre><code class="language-json">{
+    "status": "error",
+    "message": "Error description",
+    "errors": { // Optional: more detailed errors or validation messages
+        // ...
+    }
+}</code></pre>
+                    <p>HTTP Status Code: <code>400 Bad Request</code>, <code>404 Not Found</code>, <code>500 Internal Server Error</code>, etc. (The example primarily uses <code>400</code> and <code>500</code>).</p>
+
+                    <hr>
+
+                    <h2 id="api-operations-and-usage-requestresponse-samples">8. API Operations and Usage (Request/Response Samples)</h2>
+                    <p>All examples use <code>curl</code>. Replace <code>http://localhost:8000/api.php</code> with your actual API endpoint.</p>
+
+                    <h3 id="common-request-structure">8.1. Common Request Structure</h3>
+                    <p>Remember the base structure for all requests:</p>
+                    <pre><code class="language-bash">curl -X POST \
+     -H "Content-Type: application/json" \
+     -d '{
+         "dbName": "your_db",  # If applicable
+         "action": "your_action",
+         "payload": { /* ...action specific payload... */ }
+     }' \
+     http://localhost:8000/api.php</code></pre>
+
+                    <h3 id="database-operations">8.2. Database Operations</h3>
+
+                    <h4 id="create-database">Create Database</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>create_database</code></li>
+                        <li><strong>Payload:</strong>
+                            <ul><li><code>dbName</code> (string, required): Name of the database to create.</li></ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "action": "create_database",
+    "payload": {
+        "dbName": "company_data"
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Database 'company_data' created successfully.",
+    "data": null
+}</code></pre>
+
+                    <h4 id="delete-database">Delete Database</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>delete_database</code></li>
+                        <li><strong>Payload:</strong>
+                            <ul><li><code>dbName</code> (string, required): Name of the database to delete.</li></ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "action": "delete_database",
+    "payload": {
+        "dbName": "company_data"
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Database 'company_data' deleted successfully.",
+    "data": null
+}</code></pre>
+
+                    <h4 id="backup-database">Backup Database</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>backup_database</code></li>
+                        <li><strong><code>dbName</code> (top-level, required):</strong> Name of the database to back up.</li>
+                        <li><strong>Payload:</strong> (empty object <code>{}</code>)</li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "backup_database",
+    "payload": {}
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Database 'company_data' backed up successfully.",
+    "data": {
+        "backup_path": ".../sqlite_json_handler/backups/company_data_backup_YYYYMMDDHHMMSS.sqlite"
+    }
+}</code></pre>
+
+                    <h4 id="restore-database">Restore Database</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>restore_database</code></li>
+                        <li><strong>Payload:</strong>
+                            <ul>
+                                <li><code>dbNameToRestore</code> (string, required): Name of the database to restore to (will be created/overwritten).</li>
+                                <li><code>backupFileName</code> (string, required): Filename of the backup (must exist in <code>backups/</code> on server).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "action": "restore_database",
+    "payload": {
+        "dbNameToRestore": "company_data_restored",
+        "backupFileName": "company_data_backup_YYYYMMDDHHMMSS.sqlite"
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Database 'company_data_restored' restored successfully from 'company_data_backup_YYYYMMDDHHMMSS.sqlite'.",
+    "data": null
+}</code></pre>
+
+                    <h3 id="schema-operations">8.3. Schema Operations</h3>
+                    <p>For these operations, <code>dbName</code> at the top level of the request JSON is required.</p>
+
+                    <h4 id="list-all-tables-with-fields">List All Tables with Fields</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>list_tables</code></li>
+                        <li><strong><code>dbName</code> (top-level, required):</strong> Name of the database.</li>
+                        <li><strong>Payload:</strong> (empty object <code>{}</code>)</li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "list_tables",
+    "payload": {}
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Operation successful",
+    "data": {
+        "employees": [
+            {"cid":0,"name":"id","type":"INTEGER","notnull":0,"dflt_value":null,"pk":1},
+            {"cid":1,"name":"name","type":"TEXT","notnull":1,"dflt_value":null,"pk":0}
+            // ... other fields ...
+        ],
+        "departments": [ /* ... fields ... */ ]
+    }
+}</code></pre>
+                    <p>(The <code>data</code> object is a map where keys are table names, and values are arrays of field schema objects.)</p>
+
+                    <h4 id="create-table">Create Table</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>create_table</code></li>
+                        <li><strong><code>dbName</code> (top-level, required)</strong></li>
+                        <li><strong>Payload:</strong>
+                            <ul>
+                                <li><code>tableName</code> (string, required): Name of the table to create.</li>
+                                <li><code>columns</code> (array, required): Array of column definition objects. Each object:
+                                    <ul>
+                                        <li><code>name</code> (string, required): Column name.</li>
+                                        <li><code>type</code> (string, required): SQLite data type (e.g., "INTEGER", "TEXT", "REAL", "BLOB").</li>
+                                        <li><code>constraints</code> (string, optional): e.g., "PRIMARY KEY AUTOINCREMENT", "NOT NULL UNIQUE".</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "create_table",
+    "payload": {
+        "tableName": "employees",
+        "columns": [
+            { "name": "id", "type": "INTEGER", "constraints": "PRIMARY KEY AUTOINCREMENT" },
+            { "name": "name", "type": "TEXT", "constraints": "NOT NULL" },
+            { "name": "email", "type": "TEXT", "constraints": "UNIQUE" },
+            { "name": "department_id", "type": "INTEGER" }
+        ]
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Table 'employees' created successfully.",
+    "data": null
+}</code></pre>
+
+                    <h4 id="delete-table">Delete Table</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>delete_table</code></li>
+                        <li><strong><code>dbName</code> (top-level, required)</strong></li>
+                        <li><strong>Payload:</strong>
+                            <ul><li><code>tableName</code> (string, required): Name of the table to delete.</li></ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "delete_table",
+    "payload": {
+        "tableName": "old_logs"
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Table 'old_logs' deleted successfully.",
+    "data": null
+}</code></pre>
+
+                    <h4 id="get-table-schema-individual">Get Table Schema (Individual)</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>get_table_schema</code></li>
+                        <li><strong><code>dbName</code> (top-level, required)</strong></li>
+                        <li><strong>Payload:</strong>
+                            <ul><li><code>tableName</code> (string, required): Name of the table to get schema for.</li></ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "get_table_schema",
+    "payload": {
+        "tableName": "employees"
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Schema for table 'employees'.",
+    "data": [
+        {"cid":0,"name":"id","type":"INTEGER","notnull":0,"dflt_value":null,"pk":1},
+        {"cid":1,"name":"name","type":"TEXT","notnull":1,"dflt_value":null,"pk":0},
+        {"cid":2,"name":"email","type":"TEXT","notnull":0,"dflt_value":null,"pk":0},
+        {"cid":3,"name":"department_id","type":"INTEGER","notnull":0,"dflt_value":null,"pk":0}
+    ]
+}</code></pre>
+
+                    <h3 id="data-crud-operations">8.4. Data (CRUD) Operations</h3>
+                    <p>For these operations, <code>dbName</code> at the top level of the request JSON is required.</p>
+
+                    <h4 id="insert-record">Insert Record</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>insert_record</code></li>
+                        <li><strong><code>dbName</code> (top-level, required)</strong></li>
+                        <li><strong>Payload:</strong>
+                            <ul>
+                                <li><code>tableName</code> (string, required)</li>
+                                <li><code>data</code> (object, required): Key-value pairs where keys are column names and values are the data to insert.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request:</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "insert_record",
+    "payload": {
+        "tableName": "employees",
+        "data": {
+            "name": "Jane Doe",
+            "email": "jane.doe@example.com",
+            "department_id": 1
+        }
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Record inserted into 'employees'.",
+    "data": {
+        "last_insert_id": 1
+    }
+}</code></pre>
+
+                    <h4 id="select-records-query">Select Records (Query)</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>select_records</code></li>
+                        <li><strong><code>dbName</code> (top-level, required)</strong></li>
+                        <li><strong>Payload:</strong>
+                            <ul>
+                                <li><code>tableName</code> (string, required)</li>
+                                <li><code>criteria</code> (object, optional): Defines filtering, sorting, etc.
+                                    <ul>
+                                        <li><code>fields</code> (array of strings, optional): Columns to select (e.g., <code>["id", "name"]</code>). Defaults to <code>*</code>.</li>
+                                        <li><code>where</code> (array of objects, optional): Conditions for the WHERE clause. Each object:
+                                            <ul>
+                                                <li><code>field</code> (string, required): Column name.</li>
+                                                <li><code>operator</code> (string, required): e.g., "=", "!=", ">", "<", ">=", "<=", "LIKE", "NOT LIKE", "IN", "NOT IN".</li>
+                                                <li><code>value</code> (mixed, required): Value for comparison. For "IN" or "NOT IN", this should be an array.</li>
+                                            </ul>
+                                        </li>
+                                        <li><code>orderBy</code> (array of objects, optional): Sorting order. Each object:
+                                            <ul>
+                                                <li><code>field</code> (string, required): Column name.</li>
+                                                <li><code>direction</code> (string, optional): "ASC" (default) or "DESC".</li>
+                                            </ul>
+                                        </li>
+                                        <li><code>limit</code> (integer, optional): Maximum number of records to return.</li>
+                                        <li><code>offset</code> (integer, optional): Number of records to skip (for pagination).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request (Example: Get all employees in department 1, ordered by name):</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "select_records",
+    "payload": {
+        "tableName": "employees",
+        "criteria": {
+            "fields": ["id", "name", "email"],
+            "where": [
+                { "field": "department_id", "operator": "=", "value": 1 },
+                { "field": "name", "operator": "LIKE", "value": "J%" }
+            ],
+            "orderBy": [
+                { "field": "name", "direction": "ASC" },
+                { "field": "id", "direction": "DESC" }
+            ],
+            "limit": 10,
+            "offset": 0
+        }
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "Records selected from 'employees'.",
+    "data": [
+        { "id": 1, "name": "Jane Doe", "email": "jane.doe@example.com" }
+        // ... other matching records ...
+    ]
+}</code></pre>
+
+                    <h4 id="update-records">Update Records</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>update_records</code></li>
+                        <li><strong><code>dbName</code> (top-level, required)</strong></li>
+                        <li><strong>Payload:</strong>
+                            <ul>
+                                <li><code>tableName</code> (string, required)</li>
+                                <li><code>data</code> (object, required): Key-value pairs of columns to update.</li>
+                                <li><code>where</code> (array of objects, required): Conditions for the WHERE clause (see <code>selectRecords</code>). <em>Mandatory to prevent accidental full table updates.</em></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request (Example: Update Jane Doe's email):</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "update_records",
+    "payload": {
+        "tableName": "employees",
+        "data": {
+            "email": "jane.d.updated@example.com"
+        },
+        "where": [
+            { "field": "id", "operator": "=", "value": 1 }
+        ]
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "1 record(s) updated in 'employees'.",
+    "data": {
+        "affected_rows": 1
+    }
+}</code></pre>
+
+                    <h4 id="delete-records">Delete Records</h4>
+                    <ul>
+                        <li><strong>Action:</strong> <code>delete_records</code></li>
+                        <li><strong><code>dbName</code> (top-level, required)</strong></li>
+                        <li><strong>Payload:</strong>
+                            <ul>
+                                <li><code>tableName</code> (string, required)</li>
+                                <li><code>where</code> (array of objects, required): Conditions for the WHERE clause (see <code>selectRecords</code>). <em>Mandatory to prevent accidental full table deletions.</em></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>Request (Example: Delete employee with ID 2):</strong></p>
+                    <pre><code class="language-bash">curl -X POST -H "Content-Type: application/json" \
+-d '{
+    "dbName": "company_data",
+    "action": "delete_records",
+    "payload": {
+        "tableName": "employees",
+        "where": [
+            { "field": "id", "operator": "=", "value": 2 }
+        ]
+    }
+}' http://localhost:8000/api.php</code></pre>
+                    <p><strong>Successful Response (200 OK):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "success",
+    "message": "1 record(s) deleted from 'employees'.",
+    "data": {
+        "affected_rows": 1
+    }
+}</code></pre>
+
+                    <h3 id="error-handling">8.5. Error Handling</h3>
+                    <p>If an error occurs, the API will respond with an appropriate HTTP status code (e.g., 400, 404, 500) and a JSON body like this:</p>
+                    <p><strong>Example Error Response (400 Bad Request):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "error",
+    "message": "Missing 'tableName' in payload for table operation 'create_table'."
+}</code></pre>
+                    <p><strong>Example Error Response (500 Internal Server Error):</strong></p>
+                    <pre><code class="language-json">{
+    "status": "error",
+    "message": "Failed to create table 'employees': SQLSTATE[HY000]: General error: 1 table employees already exists",
+    "errors": { // "errors" key might be named "trace" in some configurations
+        "trace": "..." // Long trace string, useful for debugging
+    }
+}</code></pre>
+
+                    <hr>
+
+                    <h2 id="troubleshooting">9. Troubleshooting</h2>
+                    <ul>
+                        <li><strong>"Invalid JSON input" error:</strong>
+                            <ul><li>Ensure your request body is valid JSON and the <code>Content-Type</code> header is <code>application/json</code>.</li></ul>
+                        </li>
+                        <li><strong>"Action not specified" or "Invalid action specified":</strong>
+                            <ul><li>Check that the <code>action</code> field in your JSON request body is correct and matches one of the supported actions.</li></ul>
+                        </li>
+                        <li><strong>"Database '...' not found or not connected":</strong>
+                            <ul>
+                                <li>Ensure the <code>dbName</code> you provided exists or that you've run <code>create_database</code> first.</li>
+                                <li>Check for typos in <code>dbName</code>.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Permissions Errors on <code>databases/</code> or <code>backups/</code>:</strong>
+                            <ul>
+                                <li>The API will likely return a 500 error with a message like "Failed to create database" or "Failed to write...".</li>
+                                <li>Check your web server's error logs for more specific permission denied messages.</li>
+                                <li>Re-verify permissions as per <a href="#set-directory-permissions">Section 4.3</a>.</li>
+                            </ul>
+                        </li>
+                        <li><strong>SQL Syntax Errors (often 500 Internal Server Error):</strong>
+                            <ul>
+                                <li>The error message in the JSON response should contain details from the SQLite driver.</li>
+                                <li>Double-check your column names, data types, and query criteria for correctness.</li>
+                            </ul>
+                        </li>
+                        <li><strong>General 500 Internal Server Errors:</strong>
+                            <ul><li>Check your web server's PHP error log. The <code>ApiController</code> includes a trace in the error response for debugging, but more details might be in the server logs.</li></ul>
+                        </li>
+                        <li><strong>API endpoint not found (404):</strong>
+                            <ul>
+                                <li>Verify your web server configuration (<code>DocumentRoot</code>, rewrite rules if any).</li>
+                                <li>Ensure the path to <code>api.php</code> in your request URL is correct.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <hr>
+                    <p>This comprehensive documentation should guide users through deploying and utilizing your SQLite JSON/REST API.</p>
+
+                </div><!-- /doc-content-wrapper -->
+            </div><!-- /col-md-9 -->
+
+            <!-- Sidebar for Table of Contents -->
+            <div class="col-lg-3 col-md-4 d-none d-md-block">
+                <nav id="docSidebar" class="flex-column align-items-stretch">
+                    <h5 class="ms-3 mb-2 text-muted text-uppercase small">Contents</h5>
+                    <nav class="nav nav-pills flex-column" id="docSidebarNav">
+                        <a class="nav-link" href="#sqlite-jsonrest-api-handler-deployment-and-usage-documentation">Documentation Home</a>
+                        <a class="nav-link" href="#table-of-contents">Table of Contents</a>
+                        <a class="nav-link" href="#introduction">1. Introduction</a>
+                        <a class="nav-link" href="#project-structure">2. Project Structure</a>
+                        <a class="nav-link" href="#prerequisites">3. Prerequisites</a>
+                        <a class="nav-link" href="#deployment-steps">4. Deployment Steps</a>
+                        <nav class="nav nav-pills flex-column">
+                            <a class="nav-link" href="#clonedownload-project">4.1 Clone/Download</a>
+                            <a class="nav-link" href="#install-dependencies-composer">4.2 Install Dependencies</a>
+                            <a class="nav-link" href="#set-directory-permissions">4.3 Directory Permissions</a>
+                            <a class="nav-link" href="#web-server-configuration">4.4 Web Server Config</a>
+                             <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="#using-php-built-in-server-development">4.4.1 PHP Built-in</a>
+                                <a class="nav-link" href="#using-apache-productionstaging">4.4.2 Apache</a>
+                                <a class="nav-link" href="#using-nginx-productionstaging">4.4.3 Nginx</a>
+                            </nav>
+                        </nav>
+                        <a class="nav-link" href="#api-endpoint">5. API Endpoint</a>
+                        <a class="nav-link" href="#request-format">6. Request Format</a>
+                        <a class="nav-link" href="#response-format">7. Response Format</a>
+                        <a class="nav-link" href="#api-operations-and-usage-requestresponse-samples">8. API Operations</a>
+                        <nav class="nav nav-pills flex-column">
+                            <a class="nav-link" href="#common-request-structure">8.1 Common Request</a>
+                            <a class="nav-link" href="#database-operations">8.2 Database Ops</a>
+                             <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="#create-database">Create DB</a>
+                                <a class="nav-link" href="#delete-database">Delete DB</a>
+                                <a class="nav-link" href="#backup-database">Backup DB</a>
+                                <a class="nav-link" href="#restore-database">Restore DB</a>
+                            </nav>
+                            <a class="nav-link" href="#schema-operations">8.3 Schema Ops</a>
+                             <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="#list-all-tables-with-fields">List Tables</a>
+                                <a class="nav-link" href="#create-table">Create Table</a>
+                                <a class="nav-link" href="#delete-table">Delete Table</a>
+                                <a class="nav-link" href="#get-table-schema-individual">Get Schema</a>
+                            </nav>
+                            <a class="nav-link" href="#data-crud-operations">8.4 CRUD Ops</a>
+                             <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="#insert-record">Insert</a>
+                                <a class="nav-link" href="#select-records-query">Select</a>
+                                <a class="nav-link" href="#update-records">Update</a>
+                                <a class="nav-link" href="#delete-records">Delete</a>
+                            </nav>
+                            <a class="nav-link" href="#error-handling">8.5 Error Handling</a>
+                        </nav>
+                        <a class="nav-link" href="#troubleshooting">9. Troubleshooting</a>
+                    </nav>
+                </nav>
+            </div>
+        </div><!-- /row -->
+    </div><!-- /container-fluid -->
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3">
+        <div class="container text-center">
+            <span class="text-muted">&copy; 2023 API Documentation.</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.0 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <script>
+        // Preloader
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 500);
+            }
+        });
+
+        // Activate Bootstrap scrollspy on the main body element
+        var scrollSpy = new bootstrap.ScrollSpy(document.body, {
+            target: '#docSidebarNav',
+            offset: 100 // Adjust offset if navbar height changes or for better accuracy
+        });
+
+        // Optional: Smooth scroll for sidebar links if html scroll-behavior:smooth is not enough or for older browsers
+        // document.querySelectorAll('#docSidebar .nav-link').forEach(anchor => {
+        //     anchor.addEventListener('click', function (e) {
+        //         const href = this.getAttribute('href');
+        //         if (href.startsWith('#')) {
+        //             e.preventDefault();
+        //             const targetEl = document.querySelector(href);
+        //             if (targetEl) {
+        //                 targetEl.scrollIntoView({
+        //                     behavior: 'smooth'
+        //                 });
+        //             }
+        //         }
+        //     });
+        // });
+    </script>
+</body>
+</html>
