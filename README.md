@@ -12,7 +12,7 @@
 
 Detailed installation and deployment instructions are provided within the documentation for each API type:
 
-*   **For JSON/REST API:** Please refer to [JSON/REST API Deployment Guide](./doc/api.md).
+*   **For JSON/REST API:** Please refer to [JSON/REST API Deployment Guide](https://dbaseserverless.iquipedigital.com/).
 *   **For SOAP API:** Please refer to [SOAP API Deployment Guide](./doc/soap.md).
 
 **General Steps:**
@@ -44,7 +44,7 @@ Detailed installation and deployment instructions are provided within the docume
 
 Usage instructions, including request/response formats and code samples for interacting with the APIs, are available in their respective documentation files:
 
-*   **JSON/REST API:** [JSON/REST API Usage Guide](./doc/api.md)
+*   **JSON/REST API:** [JSON/REST API Usage Guide](https://dbaseserverless.iquipedigital.com/)
 *   **SOAP API:** [SOAP API Usage Guide](./doc/soap.md)
 
 ## Contributing
@@ -64,14 +64,14 @@ Please ensure your code adheres to PSR standards where applicable and includes a
 
 If you find this project useful and would like to support its development, please consider making a donation. Your support helps maintain and improve this project, as well as develop new open-source tools.
 
-*   **Donate via PayPal:** [https://www.paypal.me/YourPayPalUsername](https://www.paypal.me/YourPayPalUsername) *(Replace `YourPayPalUsername` with your actual PayPal.me link or another preferred donation link)*
+*   **Donate via flutterwave:** [https://flutterwave.com/donate/dbgpvvba1dxi](https://flutterwave.com/donate/dbgpvvba1dxi) 
 *   **Donate via Buy Me A Coffee:** [https://www.buymeacoffee.com/YourBMCPage](https://www.buymeacoffee.com/YourBMCPage) *(Replace `YourBMCPage` or add other platforms if you prefer)*
 
 Every contribution, no matter the size, is highly appreciated!
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details (you'll need to create this file).
+This project is licensed under the GPL-3.0 License - see the [LICENSE](https://github.com/iquipe/sqlite_json_handler/blob/main/LICENSE) file for details (you'll need to create this file).
 
 ---
 
