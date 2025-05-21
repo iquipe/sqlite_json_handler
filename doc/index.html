@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQLite JSON/REST API Handler - Documentation</title>
+    <title>dBaseServerless - Documentation</title>
 
     <!-- Bootstrap 5.0 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -228,7 +228,7 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <span class="material-icons">wysiwyg</span>
-                API Documentation
+                dBaseServerless Documentation
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -236,7 +236,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
+                        <a class="nav-link active" href="#introduction">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="https://dbaseserverless.iquipedigital.com/phpmyadmin/phpliteadmin.php">PHPSQLiteAdmin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="https://packagist.org/packages/iquipedigital/sqlite-json-handler">Package</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="https://github.com/iquipe/sqlite_json_handler/releases/tag/v0.1.0alpha">Repository</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="https://flutterwave.com/donate/dbgpvvba1dxi">Donate</a>
                     </li>
                 </ul>
             </div>
@@ -250,7 +262,8 @@
             <div class="col-lg-9 col-md-8">
                 <div class="doc-content-wrapper">
                     <!-- Converted Markdown Content Goes Here -->
-                    <h1 id="sqlite-jsonrest-api-handler-deployment-and-usage-documentation">SQLite JSON/REST API Handler - Deployment and Usage Documentation</h1>
+                    <h1 id="sqlite-jsonrest-api-handler-deployment-and-usage-documentation">dBaseServerless</h1>
+                    <h3>SQLite JSON/REST API Handler - Deployment and Usage Documentation</h3>
 
                     <h2 id="table-of-contents">Table of Contents</h2>
                     <ol>
@@ -325,16 +338,20 @@
 │   │   └── Response.php
 │   └── Api/
 │       └── ApiController.php
+├── phpmyadmin/
+│   ├── phpliteadmin.php
+│   └── phpliteadmin.css 
 ├── public/
-│   └── api.php                 # API Entry Point
-├── databases/                    # Stores .sqlite files (writable)
-├── backups/                      # Stores database backups (writable)
+│   └── api.php                 
+├── databases/                    
+├── backups/                     
 └── composer.json
 └── README.md
 </code></pre>
                     <ul>
                         <li><strong><code>src/</code></strong>: Contains the core PHP classes for database management, HTTP request/response handling, and the API controller logic.</li>
                         <li><strong><code>public/</code></strong>: Contains the web-accessible API entry point script (<code>api.php</code>). This directory should be your web server's document root.</li>
+                        <li><strong><code>phpmyadmin/</code></strong>: Contains the PHPLiteAdmin files for a web-based SQLite database management interface.</li>
                         <li><strong><code>databases/</code></strong>: Directory where SQLite database files will be created and stored.</li>
                         <li><strong><code>backups/</code></strong>: Directory where database backups will be stored.</li>
                         <li><strong><code>composer.json</code></strong>: Defines project dependencies (primarily for PSR-4 autoloading).</li>
@@ -344,7 +361,7 @@
 
                     <h2 id="prerequisites">3. Prerequisites</h2>
                     <ul>
-                        <li>PHP 7.4 or higher.</li>
+                        <li>PHP 8.0 or higher.</li>
                         <li>PHP <code>sqlite3</code> extension enabled. (Check with <code>php -m | grep sqlite</code> or in <code>php.ini</code>).</li>
                         <li>PHP <code>json</code> extension enabled (usually enabled by default).</li>
                         <li>Composer (for dependency management and autoloading - recommended).</li>
